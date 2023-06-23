@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/diginotebook-app/static/css/main.db49b32b.css",
+    "main.js": "/diginotebook-app/static/js/main.8d15f6df.js",
+    "static/js/787.2ec48b3a.chunk.js": "/diginotebook-app/static/js/787.2ec48b3a.chunk.js",
+    "static/media/logo.svg": "/diginotebook-app/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/diginotebook-app/index.html",
+    "main.db49b32b.css.map": "/diginotebook-app/static/css/main.db49b32b.css.map",
+    "main.8d15f6df.js.map": "/diginotebook-app/static/js/main.8d15f6df.js.map",
+    "787.2ec48b3a.chunk.js.map": "/diginotebook-app/static/js/787.2ec48b3a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.db49b32b.css",
+    "static/js/main.8d15f6df.js"
+  ]
+}
