@@ -71,12 +71,23 @@ const Transactions = () => {
     XLSX.writeFile(wb, `${today}_transaction.xlsx`);
   };
 
+  const total = () => {
+    const totalDebit = customersData.reduce((accumulator, object) => {
+      return accumulator + object.DebitAmount;
+    }, 0);
+    const totalCredit = customersData.reduce((accumulator, object) => {
+      return accumulator + object.CreditAmount;
+    }, 0);
+    const total = totalCredit - totalDebit;
+    return total;
+  };
+
   return (
     <div>
       <div
         className="datatable"
         style={{
-          height: "490px",
+          height: "430px",
           overflowY: "scroll",
           border: "1px solid grey",
           borderRadius: "5px",
@@ -129,7 +140,11 @@ const Transactions = () => {
                       }}
                       data-bs-toggle="tooltip"
                       data-bs-placement="top"
-                      title={customersData.length === 0 ? "Clear Record" :`Clear ${selectedCustomer}'s Record`}
+                      title={
+                        customersData.length === 0
+                          ? "Clear Record"
+                          : `Clear ${selectedCustomer}'s Record`
+                      }
                     />
                   </div>
                 </div>
@@ -226,6 +241,29 @@ const Transactions = () => {
             ))}
           </tbody>
         </table>
+        {customersData.length === 0 && (
+          <h2 style={{ color: "#eeeded" }}>No Records Found</h2>
+        )}
+      </div>
+      <div style={{ width: "100%", display: "flex", padding: "10px 20px" }}>
+        <div
+          style={{ width: "20%" }}
+          className={
+            total() > 0
+              ? "text-start fw-bold text-success"
+              : "text-start fw-bold text-danger"
+          }
+        >
+          {total() > 0 ? "You have to pay" : "You will get"}
+        </div>
+        <div
+          style={{ width: "80%" }}
+          className={
+            total() > 0
+              ? "text-end fw-bold text-success"
+              : "text-end fw-bold text-danger"
+          }
+        >{`${Math.abs(total())} /-`}</div>
       </div>
       {/* save btns */}
       <div className="d-grid">
