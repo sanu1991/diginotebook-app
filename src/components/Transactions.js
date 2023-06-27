@@ -84,10 +84,12 @@ const Transactions = () => {
 
   return (
     <div>
+      {/* table */}
       <div
         className="datatable"
         style={{
-          height: "430px",
+          // height: "430px",
+          height: "calc(100vh - 186px)",
           overflowY: "scroll",
           border: "1px solid grey",
           borderRadius: "5px",
@@ -245,6 +247,7 @@ const Transactions = () => {
           <h2 style={{ color: "#eeeded" }}>No Records Found</h2>
         )}
       </div>
+      {/* total */}
       <div style={{ width: "100%", display: "flex", padding: "10px 20px" }}>
         <div
           style={{ width: "20%" }}
@@ -265,7 +268,7 @@ const Transactions = () => {
           }
         >{`${Math.abs(total())} /-`}</div>
       </div>
-      {/* save btns */}
+      {/* save btn */}
       <div className="d-grid">
         <button
           disabled={selectedCustomer === "" ? true : false}
@@ -283,6 +286,7 @@ const Transactions = () => {
           </b>
         </button>
       </div>
+      {/* Download btn */}
       <div className="d-grid">
         <button
           disabled={excelFile.length === 0 ? true : false}

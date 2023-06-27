@@ -302,13 +302,14 @@ const NavbarComponent = () => {
               <ul class="navbar-nav ms-auto">
                 <li className="nav-item text-start align-middle p-1">
                   <button
+                    disabled="true"
                     className="btn btn-sm btn-outline-danger"
                     type="button"
                     onClick={() => {
                       handleOtherData("OpenNotebookPage", true);
                     }}
                   >
-                    Notepad
+                    FD Calculator
                   </button>
                 </li>
                 <li className="nav-item text-start align-middle p-1">
