@@ -89,7 +89,7 @@ const Transactions = () => {
         className="datatable"
         style={{
           // height: "430px",
-          height: "calc(100vh - 186px)",
+          height: "calc(100vh - 198.14px)",
           overflowY: "scroll",
           border: "1px solid grey",
           borderRadius: "5px",
