@@ -11,7 +11,7 @@ const Transactions = () => {
   const fldDataStore = useFieldDataStore();
   const otherStore = useOtherStore();
   //   console.log(fldDataStore);
-  console.log(otherStore);
+  // console.log(otherStore);
 
   const selectedCustomer = useOtherStore((store) => store.selectedCustomer);
   const customersData = useOtherStore((store) => store.customersData);

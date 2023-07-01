@@ -56,11 +56,17 @@ const NavbarComponent = () => {
               } = ele;
               return rest;
             });
+            // console.log(
+            let a = [...new Set(newArr.map((o) => JSON.stringify(o)))].map(
+              (s) => JSON.parse(s)
+            );
+            a.map((itm, ind) => (itm.id = ind + 1));
+            // );
             handleOtherData(
-              "customers",
-              [...new Set(newArr.map((o) => JSON.stringify(o)))].map((s) =>
-                JSON.parse(s)
-              )
+              "customers",a
+              // [...new Set(newArr.map((o) => JSON.stringify(o)))].map((s) =>
+              //   JSON.parse(s)
+              // )
             );
           } else {
             handleOtherData("alertMsg", "Please choose correct file!");
@@ -207,7 +213,14 @@ const NavbarComponent = () => {
                           <button
                             className="dropdown-item btn btn-sm m-0 text-end"
                             type="button"
-                            //   onClick={() => createCustomerData(itm?.CustomerName)}
+                            onClick={() => {
+                              let dltNewArr = customers.filter(
+                                (itm1) => itm.id !== itm1.id
+                              );
+                              handleOtherData("customers", dltNewArr);
+                              handleOtherData("customersData", []);
+                              handleOtherData("selectedCustomer", "");
+                            }}
                           >
                             | <AiOutlineMinusCircle />
                           </button>
@@ -232,7 +245,10 @@ const NavbarComponent = () => {
                           ) {
                             handleOtherData("customers", [
                               ...customers,
-                              { CustomerName: newCustomerName },
+                              {
+                                id: customers.length + 1,
+                                CustomerName: newCustomerName,
+                              },
                             ]);
                           } else {
                             handleOtherData(
@@ -497,6 +513,8 @@ const NavbarComponent = () => {
                   if (otherStore.dltBtnType === "Clear All Customers Records") {
                     handleOtherData("excelFile", []);
                     handleOtherData("chsFl", "");
+                    handleOtherData("customersData", []);
+                    handleOtherData("selectedCustomer", "");
                   } else if (
                     otherStore.dltBtnType ===
                     `Clear ${selectedCustomer}'s Record`
