@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { read, utils } from "xlsx";
 import { GiNotebook } from "react-icons/gi";
 import { AiOutlineMinusCircle, AiOutlineClear } from "react-icons/ai";
@@ -6,22 +6,30 @@ import { RiPlayListAddFill } from "react-icons/ri";
 import { TbFileImport } from "react-icons/tb";
 import { RxDropdownMenu } from "react-icons/rx";
 import logo from "./images/logo.png";
-import { handleOtherData, useOtherStore } from "./Store";
+import { handleOtherData, useOtherStore, useUserGuideDataStore } from "./Store";
 
 const NavbarComponent = () => {
+  const [ugClickedData, setUgClickedData] = useState("");
+
   const otherStore = useOtherStore();
   const OpenTransactionsPage = useOtherStore(
     (store) => store.OpenTransactionsPage
   );
+  const userGuideData = useUserGuideDataStore((store) => store);
+  // console.log(userGuideData);
+
   const OpenNotebookPage = useOtherStore((store) => store.OpenNotebookPage);
   const chsFl = useOtherStore((store) => store.chsFl);
   const customers = useOtherStore((store) => store.customers);
   const addCustomer = useOtherStore((store) => store.addCustomer);
   const chsExcl = useOtherStore((store) => store.chsExcl);
-  const slctCstmr = useOtherStore((store) => store.slctCstmr);
+  const customersData = useOtherStore((store) => store.customersData);
+  const dltItmId = useOtherStore((store) => store.dltItmId);
+  // const slctCstmr = useOtherStore((store) => store.slctCstmr);
   const excelFile = useOtherStore((store) => store.excelFile);
   const newCustomerName = useOtherStore((store) => store.newCustomerName);
   const selectedCustomer = useOtherStore((store) => store.selectedCustomer);
+  const userGuideShow = useOtherStore((store) => store.userGuideShow);
 
   const getExcelFile = ($event) => {
     const files = $event.target.files;
@@ -91,16 +99,25 @@ const NavbarComponent = () => {
             className="navbar-brand"
             href="#"
             style={{ display: "flex", cursor: "pointer" }}
-            onClick={() => {
-              handleOtherData("OpenTransactionsPage", false);
-              handleOtherData("OpenNotebookPage", false);
-            }}
           >
-            <div className="text-end p-0" style={{ color: "#dc3545" }}>
+            <div
+              className="text-end p-0"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+              style={{ color: "#dc3545" }}
+            >
               <GiNotebook size={35} />
             </div>
             <div className="text-start p-0">
-              <img style={{ height: "40px" }} src={logo} alt="error!" />
+              <img
+                style={{ height: "40px" }}
+                src={logo}
+                alt="error!"
+                onClick={() => {
+                  handleOtherData("OpenTransactionsPage", false);
+                  handleOtherData("OpenNotebookPage", false);
+                }}
+              />
             </div>
           </div>
           {/* toggler btn */}
@@ -251,23 +268,20 @@ const NavbarComponent = () => {
                   <li
                     class="nav-item text-start align-middle p-1"
                     style={{ color: "#dc3545" }}
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal3"
+                    onClick={(e) =>
+                      handleOtherData(
+                        "dltBtnType",
+                        "Clear All Customers Records"
+                      )
+                    }
                   >
                     <AiOutlineClear
                       data-bs-toggle="tooltip"
                       data-bs-placement="top"
-                      title="Clear All Records"
+                      title="Clear All Customers Records"
                       size={25}
-                      onClick={() => {
-                        if (excelFile.length === 0) {
-                          handleOtherData(
-                            "alertMsg",
-                            "No Records Found To Clear!"
-                          );
-                          handleOtherData("alertActive", true);
-                        } else {
-                          handleOtherData("excelFile", []);
-                        }
-                      }}
                     />
                   </li>
                 )}
@@ -328,6 +342,190 @@ const NavbarComponent = () => {
           )}
         </div>
       </nav>
+      {/* User Guide Modal */}
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div
+              class="modal-header"
+              style={{
+                padding: "10px 15px",
+              }}
+            >
+              <h5 class="modal-title">User Guide</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <p className="text-start">
+                <strong>#</strong> Click on{" "}
+                <img
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  style={{ height: "30px", cursor: "pointer" }}
+                  src={logo}
+                  alt="error!"
+                  onClick={() => {
+                    handleOtherData("OpenTransactionsPage", false);
+                    handleOtherData("OpenNotebookPage", false);
+                  }}
+                />{" "}
+                logo to retrun on Home page
+              </p>
+              {/* accordion */}
+              {userGuideData.map((itm, indx) => (
+                <div class="accordion" id="accordionExample1" key={indx}>
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne1">
+                      <button
+                        style={{ padding: "10px 15px", cursor: "pointer" }}
+                        class="accordion-button"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapseOne1"
+                        aria-expanded="true"
+                        aria-controls="collapseOne1"
+                      >
+                        {Object.keys(itm)}
+                      </button>
+                    </h2>
+                    <div
+                      id="collapseOne1"
+                      class="accordion-collapse collapse show"
+                      aria-labelledby="headingOne1"
+                      data-bs-parent="#accordionExample1"
+                    >
+                      <div
+                        class="accordion-body"
+                        style={{
+                          padding: "10px 15px 0px 15px",
+                        }}
+                      >
+                        {itm[Object.keys(itm)].map((subItm) => (
+                          <p className="text-start">
+                            <b
+                              style={{
+                                cursor: "pointer",
+                              }}
+                              onClick={(e) => {
+                                setUgClickedData(e.target.innerText);
+                                e.target.innerText === subItm.Header &&
+                                  handleOtherData(
+                                    "userGuideShow",
+                                    !userGuideShow
+                                  );
+                              }}
+                            >
+                              {subItm.Header}
+                            </b>
+                            <br />
+                            {ugClickedData === subItm.Header &&
+                              userGuideShow &&
+                              subItm.Body.map(
+                                (bodyItm, bodyIndex) =>
+                                  userGuideShow && (
+                                    <>
+                                      <strong>{bodyItm.id}.</strong>
+                                      {bodyItm.name} <br />
+                                    </>
+                                  )
+                              )}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* confirm modal */}
+      <div
+        class="modal fade"
+        id="exampleModal3"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-md modal-dialog-centered">
+          <div class="modal-content">
+            <div
+              class="modal-header"
+              style={{
+                padding: "5px 10px",
+              }}
+            >
+              <p className="text-start modal-title">
+                Do you want to {otherStore.dltBtnType} ?
+              </p>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div
+              class="modal-footer"
+              style={{
+                padding: "1px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-bs-dismiss="modal"
+                style={{
+                  padding: "0px 10px",
+                }}
+                onClick={() => {
+                  if (otherStore.dltBtnType === "Clear All Customers Records") {
+                    handleOtherData("excelFile", []);
+                    handleOtherData("chsFl", "");
+                  } else if (
+                    otherStore.dltBtnType ===
+                    `Clear ${selectedCustomer}'s Record`
+                  ) {
+                    handleOtherData("customersData", []);
+                  } else if (otherStore.dltBtnType === "Delete This Record") {
+                    let dltNewArr = customersData.filter(
+                      (itm1) => dltItmId !== itm1.id
+                    );
+                    handleOtherData("customersData", dltNewArr);
+                  }
+                }}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                style={{
+                  padding: "0px 10px",
+                }}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

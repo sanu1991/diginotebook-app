@@ -125,30 +125,27 @@ const Transactions = () => {
                       title="Add Transactions"
                     />
                   </div>
-                  <div style={{ color: "#dc3545" }}>
-                    <FaEraser
-                      className="ps-1"
-                      size={25}
-                      onClick={() => {
-                        if (customersData.length === 0) {
-                          handleOtherData(
-                            "alertMsg",
-                            "No Records Found To Clear!"
-                          );
-                          handleOtherData("alertActive", true);
-                        } else {
-                          handleOtherData("customersData", []);
-                        }
-                      }}
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="top"
-                      title={
-                        customersData.length === 0
-                          ? "Clear Record"
-                          : `Clear ${selectedCustomer}'s Record`
+                  {customersData.length !== 0 && (
+                    <div
+                      style={{ color: "#dc3545" }}
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal3"
+                      onClick={() =>
+                        handleOtherData(
+                          "dltBtnType",
+                          `Clear ${selectedCustomer}'s Record`
+                        )
                       }
-                    />
-                  </div>
+                    >
+                      <FaEraser
+                        className="ps-1"
+                        size={25}
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title={`Clear ${selectedCustomer}'s Record`}
+                      />
+                    </div>
+                  )}
                 </div>
               </th>
             </tr>
@@ -170,7 +167,6 @@ const Transactions = () => {
                           ? { ...ele, Date: e.target.value }
                           : ele
                       );
-                      //   setCustomersData(editedArr);
                       handleOtherData("customersData", editedArr);
                     }}
                   />
@@ -186,7 +182,6 @@ const Transactions = () => {
                           ? { ...ele, DebitAmount: Number(e.target.value) }
                           : ele
                       );
-                      //   setCustomersData(editedArr);
                       handleOtherData("customersData", editedArr);
                     }}
                   />
@@ -202,7 +197,6 @@ const Transactions = () => {
                           ? { ...ele, CreditAmount: Number(e.target.value) }
                           : ele
                       );
-                      //   setCustomersData(editedArr);
                       handleOtherData("customersData", editedArr);
                     }}
                   />
@@ -218,7 +212,6 @@ const Transactions = () => {
                           ? { ...ele, Description: e.target.value }
                           : ele
                       );
-                      //   setCustomersData(editedArr);
                       handleOtherData("customersData", editedArr);
                     }}
                   />
@@ -227,13 +220,11 @@ const Transactions = () => {
                   <button
                     className="btn btn-sm"
                     type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal3"
                     onClick={(e) => {
-                      console.log(customersData);
-                      let dltNewArr = customersData.filter(
-                        (itm1) => itm.id !== itm1.id
-                      );
-                      //   setCustomersData(dltNewArr);
-                      handleOtherData("customersData", dltNewArr);
+                      handleOtherData("dltBtnType", "Delete This Record");
+                      handleOtherData("dltItmId", itm.id);
                     }}
                   >
                     <MdDelete size={20} style={{ color: "#dc3545" }} />
