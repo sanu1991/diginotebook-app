@@ -88,7 +88,6 @@ const Transactions = () => {
       <div
         className="datatable"
         style={{
-          // height: "430px",
           height: "calc(100vh - 198.14px)",
           overflowY: "scroll",
           border: "1px solid grey",
@@ -179,7 +178,11 @@ const Transactions = () => {
                     onChange={(e) => {
                       let editedArr = customersData.map((ele) =>
                         ele.id === itm.id
-                          ? { ...ele, DebitAmount: Number(e.target.value) }
+                          ? {
+                              ...ele,
+                              CreditAmount: 0,
+                              DebitAmount: Number(e.target.value),
+                            }
                           : ele
                       );
                       handleOtherData("customersData", editedArr);
@@ -194,7 +197,11 @@ const Transactions = () => {
                     onChange={(e) => {
                       let editedArr = customersData.map((ele) =>
                         ele.id === itm.id
-                          ? { ...ele, CreditAmount: Number(e.target.value) }
+                          ? {
+                              ...ele,
+                              DebitAmount: 0,
+                              CreditAmount: Number(e.target.value),
+                            }
                           : ele
                       );
                       handleOtherData("customersData", editedArr);
@@ -235,30 +242,42 @@ const Transactions = () => {
           </tbody>
         </table>
         {customersData.length === 0 && (
-          <h2 style={{ color: "#eeeded" }}>No Records Found</h2>
+          <h2
+            style={{
+              height: "calc(100vh - 280px)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "#eeeded",
+            }}
+          >
+            No Records Found
+          </h2>
         )}
       </div>
       {/* total */}
-      <div style={{ width: "100%", display: "flex", padding: "10px 20px" }}>
-        <div
-          style={{ width: "20%" }}
-          className={
-            total() > 0
-              ? "text-start fw-bold text-success"
-              : "text-start fw-bold text-danger"
-          }
-        >
-          {total() > 0 ? "You have to pay" : "You will get"}
+      {customersData.length !== 0 && (
+        <div style={{ width: "100%", display: "flex", padding: "10px 20px" }}>
+          <div
+            style={{ width: "20%" }}
+            className={
+              total() > 0
+                ? "text-start fw-bold text-success"
+                : "text-start fw-bold text-danger"
+            }
+          >
+            {total() > 0 ? "You have to pay" : "You will get"}
+          </div>
+          <div
+            style={{ width: "80%" }}
+            className={
+              total() > 0
+                ? "text-end fw-bold text-success"
+                : "text-end fw-bold text-danger"
+            }
+          >{`${Math.abs(total())} /-`}</div>
         </div>
-        <div
-          style={{ width: "80%" }}
-          className={
-            total() > 0
-              ? "text-end fw-bold text-success"
-              : "text-end fw-bold text-danger"
-          }
-        >{`${Math.abs(total())} /-`}</div>
-      </div>
+      )}
       {/* save btn */}
       <div className="d-grid">
         <button
@@ -285,7 +304,7 @@ const Transactions = () => {
           type="button"
           onClick={() => exportExcel()}
         >
-          <b>Save All Records</b>
+          <b>Download</b>
         </button>
       </div>
     </div>

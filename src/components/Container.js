@@ -3,6 +3,7 @@ import NavbarComponent from "./NavbarComponent";
 import { handleOtherData, useOtherStore } from "./Store";
 import Transactions from "./Transactions";
 import NoteBook from "./NoteBook";
+import bckgrnd from "./images/bckgrnd.jpg";
 
 const Container = () => {
   const OpenTransactionsPage = useOtherStore(
@@ -43,11 +44,40 @@ const Container = () => {
         </div>
       )}
       <NavbarComponent />
-      <div
-        // onClick={() => {
-        //   handleOtherData("chsExcl", false);
-        // }}
-      >
+      {OpenTransactionsPage === false && (
+        // <div
+        //   className="homepagemainpic"
+        //   style={{ height: "calc(100vh - 68.59px)", width: "100vw" }}
+        // ></div>
+        <div>
+          <div
+            style={{
+              height: "calc(100vh - 51px)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              // color: "white",
+              // fontFamily: 'Lobster'
+            }}
+          >
+            <p className="label" style={{color: "white", fontFamily: 'Lobster', textShadow: "0 0 5px brown"}}>Ease Your Business With Digi-notebook</p>
+          </div>
+          <img
+            style={{
+              height: "100vh",
+              width: "100vw",
+              left: "0px",
+              top: "0px",
+              position: "absolute",
+              zIndex: -1,
+            }}
+            src={bckgrnd}
+            class="img-fluid"
+            alt="error!"
+          />
+        </div>
+      )}
+      <div>
         {OpenTransactionsPage && <Transactions />}
         {OpenNotebookPage && <NoteBook />}
       </div>

@@ -98,8 +98,8 @@ const NavbarComponent = () => {
 
   return (
     <div>
-      <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg" style={{padding: "0px"}}>
+        <div class="container-fluid" style={{backgroundColor: "white"}}>
           {/* logo */}
           <div
             className="navbar-brand"
@@ -220,6 +220,7 @@ const NavbarComponent = () => {
                               handleOtherData("customers", dltNewArr);
                               handleOtherData("customersData", []);
                               handleOtherData("selectedCustomer", "");
+                              handleOtherData("newCustomerName", "");
                             }}
                           >
                             | <AiOutlineMinusCircle />
@@ -236,6 +237,7 @@ const NavbarComponent = () => {
                       autoFocus={addCustomer ? true : false}
                       placeholder="Add New Customer"
                       className="form-control form-control-sm"
+                      value={newCustomerName}
                       onBlur={() => {
                         if (newCustomerName !== "") {
                           if (
@@ -259,6 +261,7 @@ const NavbarComponent = () => {
                           }
                           handleOtherData("newCustomerName", "");
                         }
+                        handleOtherData("addCustomer", false);
                       }}
                       onChange={(e) => {
                         handleOtherData("newCustomerName", e.target.value);
