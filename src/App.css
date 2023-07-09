@@ -18,6 +18,15 @@ html body {
   background-size: cover;
 }
 
+.page-item.active .page-link {
+  background-color: #198754;
+  border-color: #198754;
+  color: white;
+}
+.page-item .page-link {
+  color: #198754;
+}
+
 /* .datatable {
   height: "500px";
   overflow-y: "scroll";
@@ -46,7 +55,7 @@ html body {
 
 /* responsive font size */
 html {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 }
 
 h1 {

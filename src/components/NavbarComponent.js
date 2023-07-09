@@ -4,7 +4,6 @@ import { GiNotebook } from "react-icons/gi";
 import { AiOutlineMinusCircle, AiOutlineClear } from "react-icons/ai";
 import { RiPlayListAddFill } from "react-icons/ri";
 import { TbFileImport } from "react-icons/tb";
-import { RxDropdownMenu } from "react-icons/rx";
 import logo from "./images/logo.png";
 import { handleOtherData, useOtherStore, useUserGuideDataStore } from "./Store";
 
@@ -15,15 +14,18 @@ const NavbarComponent = () => {
   const OpenTransactionsPage = useOtherStore(
     (store) => store.OpenTransactionsPage
   );
-  const userGuideData = useUserGuideDataStore((store) => store);
   // console.log(userGuideData);
 
+  const userGuideData = useUserGuideDataStore((store) => store);
   const OpenNotebookPage = useOtherStore((store) => store.OpenNotebookPage);
   const chsFl = useOtherStore((store) => store.chsFl);
   const customers = useOtherStore((store) => store.customers);
   const addCustomer = useOtherStore((store) => store.addCustomer);
   const chsExcl = useOtherStore((store) => store.chsExcl);
   const customersData = useOtherStore((store) => store.customersData);
+  const filterCustomersData = useOtherStore(
+    (store) => store.filterCustomersData
+  );
   const dltItmId = useOtherStore((store) => store.dltItmId);
   // const slctCstmr = useOtherStore((store) => store.slctCstmr);
   const excelFile = useOtherStore((store) => store.excelFile);
@@ -63,7 +65,8 @@ const NavbarComponent = () => {
             a.map((itm, ind) => (itm.id = ind + 1));
             // );
             handleOtherData(
-              "customers",a
+              "customers",
+              a
               // [...new Set(newArr.map((o) => JSON.stringify(o)))].map((s) =>
               //   JSON.parse(s)
               // )
@@ -98,8 +101,8 @@ const NavbarComponent = () => {
 
   return (
     <div>
-      <nav class="navbar navbar-expand-lg" style={{padding: "0px"}}>
-        <div class="container-fluid" style={{backgroundColor: "white"}}>
+      <nav class="navbar navbar-expand-lg" style={{ padding: "0px" }}>
+        <div class="container-fluid" style={{ backgroundColor: "white" }}>
           {/* logo */}
           <div
             className="navbar-brand"
@@ -112,10 +115,18 @@ const NavbarComponent = () => {
               data-bs-target="#exampleModal"
               style={{ color: "#dc3545" }}
             >
-              <GiNotebook size={35} />
+              <GiNotebook
+                size={35}
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="User guide"
+              />
             </div>
             <div className="text-start p-0">
               <img
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Back to home page"
                 style={{ height: "40px" }}
                 src={logo}
                 alt="error!"
@@ -172,7 +183,7 @@ const NavbarComponent = () => {
                         data-bs-toggle="tooltip"
                         data-bs-placement="top"
                         title="Choose Excel file"
-                        size={25}
+                        size={window.screen.width < 400 ? 20 : 25}
                         onClick={() => {
                           handleOtherData("chsExcl", true);
                           handleOtherData("addCustomer", false);
@@ -230,6 +241,7 @@ const NavbarComponent = () => {
                     </ul>
                   </li>
                 )}
+                {/* add customer */}
                 <li class="nav-item text-start align-middle p-1">
                   {addCustomer ? (
                     <input
@@ -270,10 +282,11 @@ const NavbarComponent = () => {
                   ) : (
                     <div className="text-success">
                       <RiPlayListAddFill
+                      className="iconSz"
                         data-bs-toggle="tooltip"
                         data-bs-placement="top"
                         title="Add New Customer"
-                        size={25}
+                        size={window.screen.width < 400 ? 20 : 25}
                         onClick={() => {
                           handleOtherData("addCustomer", true);
                           chsFl === "" && handleOtherData("chsExcl", false);
@@ -300,7 +313,7 @@ const NavbarComponent = () => {
                       data-bs-toggle="tooltip"
                       data-bs-placement="top"
                       title="Clear All Customers Records"
-                      size={25}
+                      size={window.screen.width < 400 ? 20 : 25}
                     />
                   </li>
                 )}
@@ -517,17 +530,25 @@ const NavbarComponent = () => {
                     handleOtherData("excelFile", []);
                     handleOtherData("chsFl", "");
                     handleOtherData("customersData", []);
+                    handleOtherData("filterCustomersData", []);
                     handleOtherData("selectedCustomer", "");
+                    handleOtherData("srchDate", "");
                   } else if (
                     otherStore.dltBtnType ===
                     `Clear ${selectedCustomer}'s Record`
                   ) {
                     handleOtherData("customersData", []);
+                    handleOtherData("filterCustomersData", []);
+                    handleOtherData("srchDate", "");
                   } else if (otherStore.dltBtnType === "Delete This Record") {
                     let dltNewArr = customersData.filter(
                       (itm1) => dltItmId !== itm1.id
                     );
                     handleOtherData("customersData", dltNewArr);
+                    let dltNewArr1 = filterCustomersData.filter(
+                      (itm1) => dltItmId !== itm1.id
+                    );
+                    handleOtherData("filterCustomersData", dltNewArr1);
                   }
                 }}
               >

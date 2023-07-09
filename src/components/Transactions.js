@@ -1,21 +1,32 @@
 import React, { useState } from "react";
-import { read, utils, writeFile } from "xlsx";
 import { ImListNumbered } from "react-icons/im";
 import { MdDelete } from "react-icons/md";
-import { MdAddCircle } from "react-icons/md";
+import { MdAddCircle, MdFilterListOff, MdFilterList } from "react-icons/md";
 import { FaEraser } from "react-icons/fa";
+import { AiOutlineCaretRight, AiOutlineCaretLeft } from "react-icons/ai";
 import { handleOtherData, useFieldDataStore, useOtherStore } from "./Store";
-import { v4 as uuid } from "uuid";
+import ReactPaginate from "react-paginate";
 
 const Transactions = () => {
   const fldDataStore = useFieldDataStore();
   const otherStore = useOtherStore();
   //   console.log(fldDataStore);
-  // console.log(otherStore);
+
+  // console.log(window.screen.width)
 
   const selectedCustomer = useOtherStore((store) => store.selectedCustomer);
+  const filterCustomersData = useOtherStore(
+    (store) => store.filterCustomersData
+  );
+  const srchDate = useOtherStore((store) => store.srchDate);
   const customersData = useOtherStore((store) => store.customersData);
+  const dateSrchActive = useOtherStore((store) => store.dateSrchActive);
   const excelFile = useOtherStore((store) => store.excelFile);
+  // console.log(customersData);
+  // console.log(excelFile);
+
+  const customersDataRender =
+    srchDate === "" ? customersData : filterCustomersData;
 
   var today = new Date().toLocaleDateString("en-US", {
     year: "numeric",
@@ -82,6 +93,15 @@ const Transactions = () => {
     return total;
   };
 
+  // ================= for pagination ================ //
+  const PER_PAGE = 20;
+  const [currentPage, setCurrentPage] = useState(0);
+  const handlePageClick = ({ selected: selectedPage }) => {
+    setCurrentPage(selectedPage);
+  };
+  const offset = currentPage * PER_PAGE;
+  let pageCount = Math.ceil(customersData.length / PER_PAGE);
+
   return (
     <div>
       {/* table */}
@@ -98,18 +118,72 @@ const Transactions = () => {
           <thead aria-disabled="true">
             <tr style={{ width: "100%" }}>
               <th className="align-middle" style={{ width: "5%" }} scope="col">
-                <ImListNumbered size={20} />
+                <ImListNumbered size={15} />
               </th>
-              <th className="align-middle" style={{ width: "15%" }} scope="col">
-                Date
-              </th>
-              <th className="align-middle" style={{ width: "15%" }} scope="col">
+              {dateSrchActive === false ? (
+                <th
+                  className="align-middle"
+                  style={{ width: "20%" }}
+                  scope="col"
+                >
+                  Date
+                  {customersData.length !== 0 && (
+                    <MdFilterList
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Date wise filter"
+                      style={{ marginLeft: "5px", cursor: "pointer" }}
+                      onClick={(e) => handleOtherData("dateSrchActive", true)}
+                    />
+                  )}
+                </th>
+              ) : (
+                <th
+                  className="align-middle"
+                  style={{ width: "20%" }}
+                  scope="col"
+                >
+                  <div class="input-group">
+                    <input
+                      type="date"
+                      className="form-control form-control-sm"
+                      value={srchDate}
+                      onChange={(e) => {
+                        handleOtherData("srchDate", e.target.value);
+                        handleOtherData(
+                          "filterCustomersData",
+                          excelFile
+                            ?.filter(
+                              (itm, indx) =>
+                                itm.CustomerName === selectedCustomer
+                            )
+                            .filter((itm, ind) => itm.Date === e.target.value)
+                        );
+                      }}
+                    />
+                    <span class="input-group-text">
+                      <MdFilterListOff
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="Clear filter"
+                        style={{ cursor: "pointer" }}
+                        onClick={(e) => {
+                          handleOtherData("dateSrchActive", false);
+                          handleOtherData("filterCustomersData", []);
+                          handleOtherData("srchDate", "");
+                        }}
+                      />
+                    </span>
+                  </div>
+                </th>
+              )}
+              <th className="align-middle" style={{ width: "10%" }} scope="col">
                 Debit
               </th>
-              <th className="align-middle" style={{ width: "15%" }} scope="col">
+              <th className="align-middle" style={{ width: "10%" }} scope="col">
                 Credit
               </th>
-              <th className="align-middle" style={{ width: "40%" }} scope="col">
+              <th className="align-middle" style={{ width: "45%" }} scope="col">
                 Description
               </th>
               <th className="align-middle" style={{ width: "10%" }} scope="col">
@@ -117,7 +191,7 @@ const Transactions = () => {
                   <div className="text-success">
                     <MdAddCircle
                       className="pe-1"
-                      size={30}
+                      size={window.screen.width < 400 ? 20 : 30}
                       onClick={() => addRow()}
                       data-bs-toggle="tooltip"
                       data-bs-placement="top"
@@ -138,7 +212,7 @@ const Transactions = () => {
                     >
                       <FaEraser
                         className="ps-1"
-                        size={25}
+                        size={window.screen.width < 400 ? 15 : 25}
                         data-bs-toggle="tooltip"
                         data-bs-placement="top"
                         title={`Clear ${selectedCustomer}'s Record`}
@@ -150,97 +224,101 @@ const Transactions = () => {
             </tr>
           </thead>
           <tbody>
-            {customersData?.map((itm, indx) => (
-              <tr key={indx}>
-                <th scope="row" className="table-light">
-                  {indx + 1}
-                </th>
-                <td className="table-light">
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    value={itm.Date || ""}
-                    onChange={(e) => {
-                      let editedArr = customersData.map((ele) =>
-                        ele.id === itm.id
-                          ? { ...ele, Date: e.target.value }
-                          : ele
-                      );
-                      handleOtherData("customersData", editedArr);
-                    }}
-                  />
-                </td>
-                <td className="table-light">
-                  <input
-                    type="number"
-                    className="form-control form-control-sm"
-                    value={itm.DebitAmount || ""}
-                    onChange={(e) => {
-                      let editedArr = customersData.map((ele) =>
-                        ele.id === itm.id
-                          ? {
-                              ...ele,
-                              CreditAmount: 0,
-                              DebitAmount: Number(e.target.value),
-                            }
-                          : ele
-                      );
-                      handleOtherData("customersData", editedArr);
-                    }}
-                  />
-                </td>
-                <td className="table-light">
-                  <input
-                    type="number"
-                    className="form-control form-control-sm"
-                    value={itm.CreditAmount || ""}
-                    onChange={(e) => {
-                      let editedArr = customersData.map((ele) =>
-                        ele.id === itm.id
-                          ? {
-                              ...ele,
-                              DebitAmount: 0,
-                              CreditAmount: Number(e.target.value),
-                            }
-                          : ele
-                      );
-                      handleOtherData("customersData", editedArr);
-                    }}
-                  />
-                </td>
-                <td className="table-light">
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    value={itm.Description || ""}
-                    onChange={(e) => {
-                      let editedArr = customersData.map((ele) =>
-                        ele.id === itm.id
-                          ? { ...ele, Description: e.target.value }
-                          : ele
-                      );
-                      handleOtherData("customersData", editedArr);
-                    }}
-                  />
-                </td>
-                <td className="table-light">
-                  <button
-                    className="btn btn-sm"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal3"
-                    onClick={(e) => {
-                      handleOtherData("dltBtnType", "Delete This Record");
-                      handleOtherData("dltItmId", itm.id);
-                    }}
-                  >
-                    <MdDelete size={20} style={{ color: "#dc3545" }} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {/* {customersData?.map((itm, indx) => ( */}
+            {customersDataRender
+              ?.slice(offset, offset + PER_PAGE)
+              .map((itm, indx) => (
+                <tr key={indx}>
+                  <th scope="row" className="table-light">
+                    {indx + 1}
+                  </th>
+                  <td className="table-light">
+                    <input
+                      type="date"
+                      className="form-control form-control-sm"
+                      value={itm.Date || ""}
+                      onChange={(e) => {
+                        let editedArr = customersData.map((ele) =>
+                          ele.id === itm.id
+                            ? { ...ele, Date: e.target.value }
+                            : ele
+                        );
+                        handleOtherData("customersData", editedArr);
+                      }}
+                    />
+                  </td>
+                  <td className="table-light">
+                    <input
+                      type="number"
+                      className="form-control form-control-sm"
+                      value={itm.DebitAmount || ""}
+                      onChange={(e) => {
+                        let editedArr = customersData.map((ele) =>
+                          ele.id === itm.id
+                            ? {
+                                ...ele,
+                                CreditAmount: 0,
+                                DebitAmount: Number(e.target.value),
+                              }
+                            : ele
+                        );
+                        handleOtherData("customersData", editedArr);
+                      }}
+                    />
+                  </td>
+                  <td className="table-light">
+                    <input
+                      type="number"
+                      className="form-control form-control-sm"
+                      value={itm.CreditAmount || ""}
+                      onChange={(e) => {
+                        let editedArr = customersData.map((ele) =>
+                          ele.id === itm.id
+                            ? {
+                                ...ele,
+                                DebitAmount: 0,
+                                CreditAmount: Number(e.target.value),
+                              }
+                            : ele
+                        );
+                        handleOtherData("customersData", editedArr);
+                      }}
+                    />
+                  </td>
+                  <td className="table-light">
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      value={itm.Description || ""}
+                      onChange={(e) => {
+                        let editedArr = customersData.map((ele) =>
+                          ele.id === itm.id
+                            ? { ...ele, Description: e.target.value }
+                            : ele
+                        );
+                        handleOtherData("customersData", editedArr);
+                      }}
+                    />
+                  </td>
+                  <td className="table-light">
+                    <button
+                      className="btn btn-sm"
+                      type="button"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal3"
+                      onClick={(e) => {
+                        handleOtherData("dltBtnType", "Delete This Record");
+                        handleOtherData("dltItmId", itm.id);
+                      }}
+                    >
+                      <MdDelete size={window.screen.width < 400 ? 15 : 20} style={{ color: "#dc3545" }} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
+        {/* No Records Found */}
         {customersData.length === 0 && (
           <h2
             style={{
@@ -255,27 +333,47 @@ const Transactions = () => {
           </h2>
         )}
       </div>
-      {/* total */}
+      {/* total count */}
       {customersData.length !== 0 && (
-        <div style={{ width: "100%", display: "flex", padding: "10px 20px" }}>
+        <div style={{ width: "100%", display: "flex", padding: "5px 20px" }}>
+          <div style={{ width: "25%" }}></div>
+          {/* paginate */}
           <div
-            style={{ width: "20%" }}
-            className={
-              total() > 0
-                ? "text-start fw-bold text-success"
-                : "text-start fw-bold text-danger"
-            }
+            className="text-center"
+            style={{
+              width: "50%",
+              padding: "0px",
+              margin: "0px 0px -16px 0px",
+            }}
           >
-            {total() > 0 ? "You have to pay" : "You will get"}
+            <ReactPaginate
+              pageCount={pageCount}
+              onPageChange={handlePageClick}
+              containerClassName={"pagination justify-content-center"}
+              previousLabel={<AiOutlineCaretLeft />}
+              previousClassName={"page-item"}
+              previousLinkClassName={"page-link text-success"}
+              nextLabel={<AiOutlineCaretRight />}
+              nextClassName={"page-item"}
+              nextLinkClassName={"page-link text-success"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              activeClassName={"page-item active"}
+              disabledClassName={"page-item disabled"}
+            />
           </div>
+          {/* total */}
           <div
-            style={{ width: "80%" }}
+            style={{ width: "25%", paddingTop: "5px" }}
             className={
               total() > 0
                 ? "text-end fw-bold text-success"
                 : "text-end fw-bold text-danger"
             }
-          >{`${Math.abs(total())} /-`}</div>
+          >
+            {total() > 0 ? "You have to pay : " : "You will get : "}{" "}
+            {`${Math.abs(total())} /-`}
+          </div>
         </div>
       )}
       {/* save btn */}
